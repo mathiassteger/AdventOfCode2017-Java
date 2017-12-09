@@ -1,6 +1,7 @@
 package day8;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -25,7 +26,7 @@ public class Main {
 
 		for (int i = 0; i < lines.size(); i++) {
 			String[] parts = lines.get(i).split(" ");
-			System.out.println(lines.get(i));
+			//System.out.println(lines.get(i));
 			String targetName = parts[0];
 			String operation = parts[1];
 			int opValue = Integer.parseInt(parts[2]);
@@ -40,6 +41,8 @@ public class Main {
 				value = registers.get(targetName).value;
 		}
 
+		
+		System.out.println(registers.values().stream().map(register -> register.value).max(Comparator.naturalOrder()));
 //		for (Entry<String, Register> entry : registers.entrySet()) {
 //			if(entry.getValue().value > value){
 //				value = entry.getValue().value;
