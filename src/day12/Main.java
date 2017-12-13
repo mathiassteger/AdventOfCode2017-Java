@@ -1,88 +1,111 @@
 package day12;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Arrays;
 
 import util.ReadInputHelper;
 
 public class Main {
 	public static void main(String[] args) {
-		ArrayList<String> lines = new ReadInputHelper(12).getLines();
+		ArrayList<String> lines = new ReadInputHelper(13).getLines();
 
-		HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+		ArrayList<Wall> walls = new ArrayList<>();
 
+		int max = 0;
 		for (int i = 0; i < lines.size(); i++) {
-			String[] parts = lines.get(i).split(" <-> ");
-			Integer id = Integer.parseInt(parts[0]);
-			String[] fStrings = parts[1].split(", ");
-			ArrayList<Integer> followers = new ArrayList<>();
-
-			for (int j = 0; j < fStrings.length; j++) {
-				followers.add(Integer.parseInt(fStrings[j]));
-			}
-			map.put(i, followers);
-		}
-		int counter = 0;
-		ArrayList<HashSet<Integer>> groups = new ArrayList<>();
-
-		for (int j = 0; j < map.size(); j++) {
-			ArrayList<Integer> stack = new ArrayList<>();
-
-			stack.add(j);
-			HashSet<Integer> used = new HashSet<>();
-			while (!stack.isEmpty()) {
-
-				ArrayList<Integer> fs = map.get(stack.remove(0));
-
-				if (fs.size() > 0 && fs != null)
-					for (int i = 0; i < fs.size(); i++) {
-						if (!used.contains(fs.get(i))) {
-							stack.add(fs.get(i));
-						}
-
-						used.add(fs.get(i));
-					}
-
-//				if (stack.contains(0)) {
-//					counter++;
-//					break;
-//				}
-			}
-
-			groups.add(used);
-		}
-		
-		groups.forEach(e -> {
-			System.out.println(e.toString());
-		});
-		
-		System.out.println();
-		System.out.println();
-		
-		ArrayList<HashSet<Integer>> rslt = new ArrayList<>();
-
-		for (int i = 0; i < groups.size(); i++) {
-			HashSet<Integer> starter = groups.get(i);
-			for (int j = 0; j < groups.size(); j++) {
-				if (groups.get(j) != starter)
-					if (groups.get(j).containsAll(starter))
-						starter.clear();
-			}
+			String[] line = lines.get(i).split(": ");
+			int name = Integer.parseInt(line[0]);
+			if (name > max)
+				max = name;
+			walls.add(new Wall(Integer.parseInt(line[0]), i, Integer.parseInt(line[1])));
 		}
 
-		for (int i = 0; i < groups.size(); i++) {
-			if(groups.get(i).size() > 0){
-				rslt.add(groups.get(i));
+		int sum = 0;
+		loop: while (true) {
+			for (int i = 0; true; i++) {
+				int time = sum + i;
+				int index = walls.indexOf(new Wall(i, 0, -1));
+
+				if (index == -1) {
+					continue;
+				}
+
+				Wall wall = walls.get(index);
+
+				if (wall.getSpos(time) == 0) {
+					sum++;
+					break;
+				}
+
+				if (wall.name >= max) {
+					break loop;
+				}
 			}
+
+		}
+		System.out.println(sum);
+	}
+}
+
+class Wall {
+	public int name, depth, size, spos = 0;
+	boolean reachedTop = false;
+	int[] sps;
+	int ceil;
+
+	public Wall(int name, int depth, int size) {
+		this.name = name;
+		this.depth = depth;
+		this.size = size;
+
+		if (size != -1) {
+			sps = new int[size + size - 2];
+			initSPos();
+		}
+	}
+
+	public void incScanner() {
+		if (size - 1 == spos)
+			reachedTop = true;
+		if (spos == 0)
+			reachedTop = false;
+
+		if (!reachedTop)
+			spos++;
+		else
+			spos--;
+
+	}
+
+	public boolean equals(Object o) {
+		Wall other = (Wall) o;
+		return name == other.name;
+	}
+
+	public void reset() {
+		spos = 0;
+	}
+
+	public void initSPos() {
+		int end1 = size-2;
+		int counter = size-2;
+		for (int i = 0; i < end1; i++){
+			sps[i] = counter--;
 		}
 		
-		rslt.forEach(e -> {
-			System.out.println(e.toString());
-		});
+		counter = 0;
+		for(int i = end1; i < sps.length;i++){
+			sps[i] = counter++;
+		}
+		
+		System.out.println(Arrays.toString(sps));
+	}
 
-		System.out.println(counter);
-		System.out.println(rslt.size());
+	public int getSpos(int index) {
+		if (size == 2)
+			return index % 2;
+		else
+			return Math.abs(sps[(index + size-2) % sps.length]);
 	}
 
 }
