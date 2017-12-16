@@ -24,37 +24,29 @@ public class Main {
 			if (part.length() > 3) {
 				arg2 = parts2[1];
 			}
-			System.out.print(part + " ");
-			System.out.println(move + arg1 + "/" + arg2);
 
 			moves.add(new Move(move, arg1, arg2));
 		}
 
 		char[] ps = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p' };
 
+		char c3, c4;
+		int pos1, pos2;
 		for (int j = 0; j < 1000000000; j++) {
 			for (Move move : moves) {
 				switch (move.move) {
 				case "s":
-					for (int i = 0; i < Integer.parseInt(move.arg1); i++) {
-						char last = ps[ps.length - 1];
-						System.arraycopy(ps, 0, ps, 1, ps.length - 1);
-						ps[0] = last;
-					}
+					ArrayUtils.shift(ps, move.start);
 					break;
 				case "x":
-					char c1 = ps[Integer.parseInt(move.arg1)];
-					char c2 = ps[Integer.parseInt(move.arg2)];
-
-					ps[Integer.parseInt(move.arg1)] = c2;
-					ps[Integer.parseInt(move.arg2)] = c1;
+					ArrayUtils.swap(ps, move.pos1, move.pos2);
 					break;
 				case "p":
-					char c3 = move.arg1.charAt(0);
-					char c4 = move.arg2.charAt(0);
-
-					int pos1 = ArrayUtils.indexOf(ps, c3);
-					int pos2 = ArrayUtils.indexOf(ps, c4);
+					c3 = move.arg1;
+					c4 = move.arg2;
+					
+					pos1 = ArrayUtils.indexOf(ps, c3);
+					pos2 = ArrayUtils.indexOf(ps, c4);
 
 					ps[pos1] = c4;
 					ps[pos2] = c3;
@@ -62,6 +54,9 @@ public class Main {
 				}
 
 			}
+
+			if (j % 1000000 == 0)
+				System.out.println(j);
 		}
 
 		System.out.println(new String(ps));
@@ -71,12 +66,24 @@ public class Main {
 
 class Move {
 	public String move;
-	public String arg1;
-	public String arg2;
+	public int pos1, pos2;
+	public int start;
+	public char arg1 = ' ', arg2 = ' ';
 
 	public Move(String move, String arg1, String arg2) {
 		this.move = move;
-		this.arg1 = arg1;
-		this.arg2 = arg2;
+		switch (this.move) {
+		case "s":
+			start = Integer.parseInt(arg1);
+			break;
+		case "x":
+			pos1 = Integer.parseInt(arg1);
+			pos2 = Integer.parseInt(arg2);
+			break;
+		case "p":
+			this.arg1 = arg1.charAt(0);
+			this.arg2 = arg2.charAt(0);
+			break;
+		}
 	}
 }
