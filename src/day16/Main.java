@@ -1,6 +1,7 @@
 package day16;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -27,12 +28,20 @@ public class Main {
 
 			moves.add(new Move(move, arg1, arg2));
 		}
-
+		char[] orig = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p' };
 		char[] ps = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p' };
+
+		ArrayList<char[]> pasts = new ArrayList<>();
 
 		char c3, c4;
 		int pos1, pos2;
-		for (int j = 0; j < 1000000000; j++) {
+		boolean found = false;
+		
+		for (int j = 0; j < 200; j++) {
+			char[] temp = new char[ps.length];
+			System.arraycopy(ps, 0, temp, 0, ps.length);
+			pasts.add(temp);
+			System.out.println(j + ": " +new String(ps));
 			for (Move move : moves) {
 				switch (move.move) {
 				case "s":
@@ -44,7 +53,7 @@ public class Main {
 				case "p":
 					c3 = move.arg1;
 					c4 = move.arg2;
-					
+
 					pos1 = ArrayUtils.indexOf(ps, c3);
 					pos2 = ArrayUtils.indexOf(ps, c4);
 
@@ -54,12 +63,36 @@ public class Main {
 				}
 
 			}
-
+			
+			
 			if (j % 1000000 == 0)
 				System.out.println(j);
+
+			if (!found) {
+				for (char[] cs : pasts) {
+					if (Arrays.equals(orig, ps)) {
+						System.out.println(j);
+						found = true;
+						System.out.println(1000000000 % j);
+						break;
+					}
+				}
+			}
+			// if(found){
+			// break;
+			// }
 		}
 
 		System.out.println(new String(ps));
+
+	}
+}
+
+class Program {
+	int position;
+	char name;
+
+	public Program(char name, int pos) {
 
 	}
 }
