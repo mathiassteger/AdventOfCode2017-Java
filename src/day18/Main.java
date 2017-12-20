@@ -10,8 +10,8 @@ public class Main {
 	public static LinkedBlockingQueue<ShadowLong> messagesOf0 = new LinkedBlockingQueue<>(),
 			messagesOf1 = new LinkedBlockingQueue<>();
 
-	public static int speed = 0;
-	
+	public static int speed = 50;
+
 	public static void main(String[] args) {
 		int integer = 18;
 		ArrayList<String> lines = new ReadInputHelper(integer).getLines();
