@@ -53,13 +53,14 @@ public class Main {
 				size = map.length;
 			}
 
-			if (args[3].equals("-relative"))
-				printRelativeMap();
-			else if(args[3].equals("-absolute"))
-				printWholeMap();
-			
+			if (args.length > 3) {
+				if (args[3].equals("-relative"))
+					printRelativeMap();
+				else if (args[3].equals("-absolute"))
+					printWholeMap();
+			}
 			System.out.println(i);
-			
+
 			Node node = map[y][x];
 			if (node.flag == Flag.INFECTED) {
 				direction = (direction + 1) % 4;
@@ -112,10 +113,8 @@ public class Main {
 			}
 		}
 
-		// Assume new cells should be dead, i.e. false..
 		for (int row = number; row < oldSize + number; row++) {
 			for (int col = number; col < oldSize + number; col++) {
-				// ..copy only the existing cells into new locations.
 				Node node = matrix[row - number][col - number];
 				node.x += number;
 				node.y += number;
@@ -135,7 +134,6 @@ public class Main {
 		try {
 			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 		} catch (InterruptedException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -163,7 +161,6 @@ public class Main {
 		try {
 			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 		} catch (InterruptedException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
