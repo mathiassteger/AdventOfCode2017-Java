@@ -11,7 +11,7 @@ public class Main {
 	static ArrayList<Comp> all = new ArrayList<>();
 
 	public static void main(String[] args) {
-		ArrayList<String> lines = new ReadInputHelper(0).getLines();
+		ArrayList<String> lines = new ReadInputHelper(24).getLines();
 
 		int sum = 0;
 
