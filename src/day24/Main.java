@@ -11,17 +11,23 @@ public class Main {
 	static ArrayList<Comp> all = new ArrayList<>();
 
 	public static void main(String[] args) {
-		ArrayList<String> lines = new ReadInputHelper(0).getLines();
+		ArrayList<String> lines = new ReadInputHelper(24).getLines();
 
 		int sum = 0;
+		int bsize = 0;
 
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			String[] parts = line.split("/");
+
 			Comp a = new Comp(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
 
 			if (a.isBase()) {
-				starters.add(a);
+				if (a.x == 0) {
+					starters.add(new Comp(a));
+				} else {
+					starters.add(new Comp(a.y, a.x));
+				}
 			} else {
 				comps.add(a);
 			}
@@ -29,15 +35,59 @@ public class Main {
 			all.add(a);
 		}
 
+		ArrayList<ArrayList<Comp>> bs = new ArrayList<>();
+
 		for (int i = 0; i < starters.size(); i++) {
-			Comp starter = starters.get(i);
-			starter.initSuccessors(comps);
+			ArrayList<Comp> t = new ArrayList<>();
+			t.add(new Comp(starters.get(i)));
+			bs.add(t);
 		}
 
-		for (int i = 0; i < all.size(); i++) {
-			all.get(i).getB("");
-			all.get(i).getSum(0);
+		boolean changeFlag = true;
+		while (changeFlag) {
+			// try {
+			// Thread.sleep(1000);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			System.out.println(bs.size());
+			changeFlag = false;
+			sum = 0;
+			for (int i = bs.size() - 1; i > -1; i--) {
+				ArrayList<Comp> temp = bs.remove(i);
+				// System.out.println(temp.toString());
+
+					
+					int localSum = 0;
+
+					for (Comp c : temp) {
+						localSum += c.y + c.x;
+					}
+
+					if (localSum > sum) {
+						sum = localSum;
+					}
+				
+				for (Comp o : comps) {
+					Comp cold = temp.get(temp.size() - 1);
+					if (cold.isPossibleConnector(o) && !temp.contains(o)) {
+
+						ArrayList<Comp> gotem = new ArrayList<>(temp);
+
+						if (cold.y == o.x) {
+							gotem.add(new Comp(o));
+						} else {
+							gotem.add(new Comp(o.y, o.x));
+						}
+
+						bs.add(gotem);
+						changeFlag = true;
+					}
+				}
+			}
 		}
+		System.out.println("strength: " + sum);
 	}
 
 	static Comp getComp(int x, int y) {
@@ -60,20 +110,23 @@ class Comp {
 		this.y = y;
 	}
 
+	public Comp(Comp o) {
+		this.x = o.x;
+		this.y = o.y;
+	}
+
 	public void initSuccessors(ArrayList<Comp> comps) {
 		ArrayList<Comp> temp = new ArrayList<>();
 		this.successorsInitiated = true;
 
 		for (Comp c : comps) {
-			if (isConnected(c)) {
+			if (isPossibleConnector(c)) {
 				String connector = getConnector(c);
-				
-//				temp.add(c);
-//				if (!predecessors.contains(c))
-//					c.predecessors.add(this);
-				
-				
-				
+
+				// temp.add(c);
+				// if (!predecessors.contains(c))
+				// c.predecessors.add(this);
+
 				if (connector.equals("x")) {
 					if (!xOcc) {
 						xOcc = true;
@@ -111,7 +164,7 @@ class Comp {
 		for (Comp c : predecessors) {
 			c.getSum(sum);
 		}
-		
+
 		if (isBase()) {
 			System.out.println(sum);
 		}
@@ -129,17 +182,17 @@ class Comp {
 		}
 	}
 
-	public boolean isConnected(Comp o) {
+	public boolean isPossibleConnector(Comp o) {
 		if (o.equals(this))
 			return false;
 
-		return o.x == this.x || o.x == this.y || o.y == this.x || o.y == this.y;
+		return o.x == this.y || o.y == this.y;
 	}
 
 	public String getConnector(Comp o) {
 		if (o.equals(this))
 			return "";
-		
+
 		if (o.x == this.x) {
 			return "x";
 		} else if (o.x == this.y) {
@@ -164,7 +217,7 @@ class Comp {
 	public boolean equals(Object other) {
 		Comp o = (Comp) other;
 
-		return o.x == this.x && o.y == this.y;
+		return (o.x == this.x && o.y == this.y) || (o.y == this.x && o.x == this.y);
 	}
 
 	public String toString() {
